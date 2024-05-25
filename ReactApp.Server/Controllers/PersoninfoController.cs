@@ -1,79 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReactApp.Server.Models.Request;
+using ReactApp.Server.Services;
 
 namespace ReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PersoninfoController : Controller
+    public class PersoninfoController : ControllerBase
     {
-        // GET: PersoninfoController/Details/5
-        public ActionResult Details(int id)
+        private readonly IPersoninfoService _PersoninfoService;
+        public PersoninfoController(IPersoninfoService PersoninfoService)
         {
-            return View();
+            _PersoninfoService = PersoninfoService;
         }
-
-        // GET: PersoninfoController/Create
-        public ActionResult Create()
+        [HttpGet("GetPersoninfo")]
+        public async Task<IActionResult> GetPersoninfo([FromQuery] GetPersoninfoQueryModel query)
         {
-            return View();
-        }
+            var data = await _PersoninfoService.GetPersoninfoAsync(query);
 
-        // POST: PersoninfoController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            if (data == null || !data.Any())
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PersoninfoController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PersoninfoController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PersoninfoController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PersoninfoController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return Ok(data);
         }
     }
 }
