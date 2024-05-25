@@ -49,6 +49,10 @@ export default defineConfig({
             '^/weatherforecast': {
                 target: 'https://localhost:7115/',
                 secure: false
+            },
+            '^api/Personinfo/GetPersoninfo': {
+                target: 'https://localhost:7115/',
+                secure: false
             }
         },
         port: 5173,
