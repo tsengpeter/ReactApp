@@ -25,5 +25,20 @@ namespace ReactApp.Server.Controllers
             }
             return Ok(data);
         }
+
+        [HttpPost("AddNewPersoninfo")]
+        public async Task<IActionResult> AddNewPersoninfo([FromBody] AddNewPersoninfoQueryModel query)
+        {
+            var result = await _PersoninfoService.AddNewPersoninfoAsync(query);
+
+            if (result.Cmd == 0)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
     }
 }
