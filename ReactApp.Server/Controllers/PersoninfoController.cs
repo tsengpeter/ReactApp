@@ -46,7 +46,22 @@ namespace ReactApp.Server.Controllers
         {
             var result = await _PersoninfoService.DeletePersoninfoAsync(query);
 
-            if (result.Cmd == 0) // 假设 2 表示成功
+            if (result.Cmd == 0)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
+
+        [HttpPost("UpdatePersoninfo")]
+        public async Task<IActionResult> UpdatePersoninfo([FromBody] UpdatePersoninfoQueryModel query)
+        {
+            var result = await _PersoninfoService.UpdatePersoninfoAsync(query);
+
+            if (result.Cmd == 0)
             {
                 return Ok(result);
             }

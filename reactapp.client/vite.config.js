@@ -61,6 +61,10 @@ export default defineConfig({
             '^api/Personinfo/DeletePersoninfo': {
                 target: 'https://localhost:7115/',
                 secure: false
+            },
+            '^api/Personinfo/UpdatePersoninfo': {
+                target: 'https://localhost:7115/',
+                secure: false
             }
         },
         port: 5173,

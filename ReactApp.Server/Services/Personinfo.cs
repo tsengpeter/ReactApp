@@ -11,6 +11,7 @@ namespace ReactApp.Server.Services
         Task<List<GetPersoninfoResultModel>> GetPersoninfoAsync(GetPersoninfoQueryModel query);
         Task<AddNewPersoninfoResultModel> AddNewPersoninfoAsync(AddNewPersoninfoQueryModel query);
         Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query);
+        Task<UpdatePersoninfoResultModel> UpdatePersoninfoAsync(UpdatePersoninfoQueryModel query);
     }
     public class Personinfo
     {
@@ -114,10 +115,15 @@ namespace ReactApp.Server.Services
         }
         #endregion
 
-        #region 修改資料
-
-        #endregion
         #region 刪除資料
+        /// <summary>
+        /// 刪除資料
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>
+        /// cmd: 0 -> 成功, 1 -> 失敗, 2 -> 例外錯誤
+        /// message 回傳訊息
+        /// </returns>
         public async Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query)
         {
             var result = new DeletePersoninfoResultModel();
@@ -145,6 +151,59 @@ namespace ReactApp.Server.Services
                 result.Cmd = 3;
                 result.Message = $"Failed to delete Personinfo. Error: {ex.Message}";
             }
+            return result;
+        }
+        #endregion
+
+        #region 修改資料
+        /// <summary>
+        /// 修改資料
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>
+        /// cmd: 0 -> 成功, 1 -> 失敗, 2 -> 例外錯誤
+        /// message 回傳訊息
+        /// </returns>
+        public async Task<UpdatePersoninfoResultModel> UpdatePersoninfoAsync(UpdatePersoninfoQueryModel query)
+        {
+            var result = new UpdatePersoninfoResultModel();
+            var table = _ExamContext.Personinfos;
+
+            var personinfo = await table.FirstOrDefaultAsync(p => p.No == query.No);
+
+            if (personinfo == null)
+            {
+                result.Cmd = 1;
+                result.Message = "Personinfo not found!";
+                return result;
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(query.Name))
+                {
+                    personinfo.Name = query.Name;
+                }
+                if (!string.IsNullOrEmpty(query.Phone))
+                {
+                    personinfo.Phone = query.Phone;
+                }
+                if (!string.IsNullOrEmpty(query.Note))
+                {
+                    personinfo.Note = query.Note;
+                }
+
+                await _ExamContext.SaveChangesAsync();
+
+                result.Cmd = 0; // 假设 2 表示成功
+                result.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                result.Cmd = 3;
+                result.Message = $"Failed to update Personinfo. Error: {ex.Message}";
+            }
+
             return result;
         }
         #endregion
