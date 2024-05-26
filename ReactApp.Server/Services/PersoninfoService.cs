@@ -13,11 +13,11 @@ namespace ReactApp.Server.Services
         Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query);
         Task<UpdatePersoninfoResultModel> UpdatePersoninfoAsync(UpdatePersoninfoQueryModel query);
     }
-    public class Personinfo
+    public class PersoninfoService: IPersoninfoService
     {
         private readonly ExamContext _ExamContext;
 
-        public Personinfo(ExamContext examContext)
+        public PersoninfoService(ExamContext examContext)
         {
             _ExamContext = examContext;
         }

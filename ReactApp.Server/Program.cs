@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using ReactApp.Server.Models;
+using ReactApp.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Regist IPersoninfoService
+builder.Services.AddScoped<IPersoninfoService, PersoninfoService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
