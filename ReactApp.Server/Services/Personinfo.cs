@@ -42,7 +42,7 @@ namespace ReactApp.Server.Services
             {
                 data.Where(x => x.Name == query.Name);
             }
-            var personinfos = data.ToList();
+            var personinfos = await data.ToListAsync();
 
             for ( var i = 0; i < personinfos.Count; i++ )
             {
