@@ -40,5 +40,20 @@ namespace ReactApp.Server.Controllers
                 return BadRequest(result);
             }
         }
+
+        [HttpPost("DeletePersoninfo")]
+        public async Task<IActionResult> DeletePersoninfo([FromBody] DeletePersoninfoQueryModel query)
+        {
+            var result = await _PersoninfoService.DeletePersoninfoAsync(query);
+
+            if (result.Cmd == 0) // 假设 2 表示成功
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
     }
 }

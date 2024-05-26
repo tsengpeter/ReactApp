@@ -57,6 +57,10 @@ export default defineConfig({
             '^api/Personinfo/AddNewPersoninfo': {
                 target: 'https://localhost:7115/',
                 secure: false
+            },
+            '^api/Personinfo/DeletePersoninfo': {
+                target: 'https://localhost:7115/',
+                secure: false
             }
         },
         port: 5173,

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ReactApp.Server.Models;
 using ReactApp.Server.Models.Request;
 using ReactApp.Server.Models.Response;
@@ -9,6 +10,7 @@ namespace ReactApp.Server.Services
     {
         Task<List<GetPersoninfoResultModel>> GetPersoninfoAsync(GetPersoninfoQueryModel query);
         Task<AddNewPersoninfoResultModel> AddNewPersoninfoAsync(AddNewPersoninfoQueryModel query);
+        Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query);
     }
     public class Personinfo
     {
@@ -109,6 +111,41 @@ namespace ReactApp.Server.Services
 
             return result;
 
+        }
+        #endregion
+
+        #region 修改資料
+
+        #endregion
+        #region 刪除資料
+        public async Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query)
+        {
+            var result = new DeletePersoninfoResultModel();
+            var table = _ExamContext.Personinfos;
+
+            var personinfo = await table.FirstOrDefaultAsync(p => p.No == query.No && p.Name == query.Name);
+
+            if (personinfo == null)
+            {
+                result.Cmd = 1;
+                result.Message = "Personinfo not found!";
+                return result;
+            }
+
+            try
+            {
+                table.Remove(personinfo);
+                await _ExamContext.SaveChangesAsync();
+
+                result.Cmd = 0; // 假设 2 表示成功
+                result.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                result.Cmd = 3;
+                result.Message = $"Failed to delete Personinfo. Error: {ex.Message}";
+            }
+            return result;
         }
         #endregion
     }
