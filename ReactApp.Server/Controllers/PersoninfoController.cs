@@ -14,10 +14,11 @@ namespace ReactApp.Server.Controllers
         {
             _PersoninfoService = PersoninfoService;
         }
+
         [HttpGet("GetPersoninfo")]
-        public async Task<IActionResult> GetPersoninfo([FromQuery] GetPersoninfoQueryModel query)
+        public IActionResult GetPersoninfo([FromQuery] GetPersoninfoQueryModel query)
         {
-            var data = await _PersoninfoService.GetPersoninfoAsync(query);
+            var data = _PersoninfoService.GetPersoninfo(query);
 
             if (data == null || !data.Any())
             {
@@ -27,9 +28,9 @@ namespace ReactApp.Server.Controllers
         }
 
         [HttpPost("AddNewPersoninfo")]
-        public async Task<IActionResult> AddNewPersoninfo([FromBody] AddNewPersoninfoQueryModel query)
+        public IActionResult AddNewPersoninfo([FromBody] AddNewPersoninfoQueryModel query)
         {
-            var result = await _PersoninfoService.AddNewPersoninfoAsync(query);
+            var result = _PersoninfoService.AddNewPersoninfo(query);
 
             if (result.Cmd == 0)
             {
@@ -42,9 +43,9 @@ namespace ReactApp.Server.Controllers
         }
 
         [HttpPost("DeletePersoninfo")]
-        public async Task<IActionResult> DeletePersoninfo([FromBody] DeletePersoninfoQueryModel query)
+        public IActionResult DeletePersoninfo([FromBody] DeletePersoninfoQueryModel query)
         {
-            var result = await _PersoninfoService.DeletePersoninfoAsync(query);
+            var result = _PersoninfoService.DeletePersoninfo(query);
 
             if (result.Cmd == 0)
             {
@@ -57,9 +58,9 @@ namespace ReactApp.Server.Controllers
         }
 
         [HttpPost("UpdatePersoninfo")]
-        public async Task<IActionResult> UpdatePersoninfo([FromBody] UpdatePersoninfoQueryModel query)
+        public IActionResult UpdatePersoninfo([FromBody] UpdatePersoninfoQueryModel query)
         {
-            var result = await _PersoninfoService.UpdatePersoninfoAsync(query);
+            var result = _PersoninfoService.UpdatePersoninfo(query);
 
             if (result.Cmd == 0)
             {

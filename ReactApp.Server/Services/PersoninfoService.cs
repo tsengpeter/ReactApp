@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ReactApp.Server.Models;
 using ReactApp.Server.Models.Request;
 using ReactApp.Server.Models.Response;
@@ -8,88 +7,72 @@ namespace ReactApp.Server.Services
 {
     public interface IPersoninfoService
     {
-        Task<List<GetPersoninfoResultModel>> GetPersoninfoAsync(GetPersoninfoQueryModel query);
-        Task<AddNewPersoninfoResultModel> AddNewPersoninfoAsync(AddNewPersoninfoQueryModel query);
-        Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query);
-        Task<UpdatePersoninfoResultModel> UpdatePersoninfoAsync(UpdatePersoninfoQueryModel query);
+        List<GetPersoninfoResultModel> GetPersoninfo(GetPersoninfoQueryModel query);
+        AddNewPersoninfoResultModel AddNewPersoninfo(AddNewPersoninfoQueryModel query);
+        DeletePersoninfoResultModel DeletePersoninfo(DeletePersoninfoQueryModel query);
+        UpdatePersoninfoResultModel UpdatePersoninfo(UpdatePersoninfoQueryModel query);
     }
-    public class PersoninfoService: IPersoninfoService
+
+    public class PersoninfoService : IPersoninfoService
     {
-        private readonly ExamContext _ExamContext;
+        private readonly ExamContext _examContext;
 
         public PersoninfoService(ExamContext examContext)
         {
-            _ExamContext = examContext;
+            _examContext = examContext;
         }
+
         #region 資料查詢
-        /// <summary>
-        /// 取得資料
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns>
-        /// No, Name, Phone, Note
-        /// </returns>
-        public async Task<List<GetPersoninfoResultModel>> GetPersoninfoAsync(GetPersoninfoQueryModel query)
+        public List<GetPersoninfoResultModel> GetPersoninfo(GetPersoninfoQueryModel query)
         {
-            var Result = new List<GetPersoninfoResultModel>();
+            var result = new List<GetPersoninfoResultModel>();
 
-            var data = _ExamContext.Personinfos.AsQueryable();
-            if (query.No != null)
+            IQueryable<Personinfo> data = _examContext.Personinfos;
+            if (query.No.HasValue)
             {
-                data.Where(x => x.No == query.No);
+                data = data.Where(x => x.No == query.No);
             }
-            if( query.Name != null )
+            if (!string.IsNullOrEmpty(query.Name))
             {
-                data.Where(x => x.Name == query.Name);
+                data = data.Where(x => x.Name == query.Name);
             }
-            var personinfos = await data.ToListAsync();
+            var personinfos = data.ToList();
 
-            for ( var i = 0; i < personinfos.Count; i++ )
+            foreach (var personinfo in personinfos)
             {
-                var personinfo = new GetPersoninfoResultModel()
+                result.Add(new GetPersoninfoResultModel
                 {
-                    No = personinfos[i].No,
-                    Name = personinfos[i].Name,
-                    Phone = personinfos[i].Phone,
-                    Note = personinfos[i].Note
-                };
-                Result.Add(personinfo);
+                    No = personinfo.No,
+                    Name = personinfo.Name,
+                    Phone = personinfo.Phone,
+                    Note = personinfo.Note
+                });
             }
 
-            return Result;
+            return result;
         }
         #endregion
 
         #region 新增資料
-        /// <summary>
-        /// 新增資料
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns>
-        /// cmd: 0 -> 成功, 1 -> 失敗, 2 -> 例外錯誤
-        /// Message 回傳結果的訊息
-        /// </returns>
-        public async Task<AddNewPersoninfoResultModel> AddNewPersoninfoAsync(AddNewPersoninfoQueryModel query)
+        public AddNewPersoninfoResultModel AddNewPersoninfo(AddNewPersoninfoQueryModel query)
         {
             var result = new AddNewPersoninfoResultModel();
-            var table = _ExamContext.Personinfos;
 
-            // 確認 Name 是否為空
             if (string.IsNullOrEmpty(query.Name))
             {
                 result.Cmd = 1;
-                result.Message = "Name Can't Be Empty!";
-                return result;
-            }
-            // 確認 Name 是否為空
-            if (string.IsNullOrEmpty(query.Phone))
-            {
-                result.Cmd = 1;
-                result.Message = "Phone Can't Be Empty!";
+                result.Message = "Name can't be empty!";
                 return result;
             }
 
-            var newPersoninfo = new Models.Personinfo
+            if (string.IsNullOrEmpty(query.Phone))
+            {
+                result.Cmd = 1;
+                result.Message = "Phone can't be empty!";
+                return result;
+            }
+
+            var newPersoninfo = new Personinfo
             {
                 Name = query.Name,
                 Phone = query.Phone,
@@ -98,8 +81,8 @@ namespace ReactApp.Server.Services
 
             try
             {
-                await table.AddAsync(newPersoninfo);
-                await _ExamContext.SaveChangesAsync();
+                _examContext.Personinfos.Add(newPersoninfo);
+                _examContext.SaveChanges();
 
                 result.Cmd = 0;
                 result.Message = "Success";
@@ -107,29 +90,20 @@ namespace ReactApp.Server.Services
             catch (Exception ex)
             {
                 result.Cmd = 2;
-                result.Message = $"Failed to add new Personinfo. Error: {ex.Message}";
+                result.Message = $"Failed to add new personinfo. Error: {ex.Message}";
             }
 
             return result;
-
         }
         #endregion
 
         #region 刪除資料
-        /// <summary>
-        /// 刪除資料
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns>
-        /// cmd: 0 -> 成功, 1 -> 失敗, 2 -> 例外錯誤
-        /// message 回傳訊息
-        /// </returns>
-        public async Task<DeletePersoninfoResultModel> DeletePersoninfoAsync(DeletePersoninfoQueryModel query)
+        public DeletePersoninfoResultModel DeletePersoninfo(DeletePersoninfoQueryModel query)
         {
             var result = new DeletePersoninfoResultModel();
-            var table = _ExamContext.Personinfos;
 
-            var personinfo = await table.FirstOrDefaultAsync(p => p.No == query.No && p.Name == query.Name);
+            var personinfo = _examContext.Personinfos
+                .FirstOrDefault(p => p.No == query.No && p.Name == query.Name);
 
             if (personinfo == null)
             {
@@ -140,36 +114,28 @@ namespace ReactApp.Server.Services
 
             try
             {
-                table.Remove(personinfo);
-                await _ExamContext.SaveChangesAsync();
+                _examContext.Personinfos.Remove(personinfo);
+                _examContext.SaveChanges();
 
-                result.Cmd = 0; // 假设 2 表示成功
+                result.Cmd = 0;
                 result.Message = "Success";
             }
             catch (Exception ex)
             {
-                result.Cmd = 3;
-                result.Message = $"Failed to delete Personinfo. Error: {ex.Message}";
+                result.Cmd = 2;
+                result.Message = $"Failed to delete personinfo. Error: {ex.Message}";
             }
+
             return result;
         }
         #endregion
 
         #region 修改資料
-        /// <summary>
-        /// 修改資料
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns>
-        /// cmd: 0 -> 成功, 1 -> 失敗, 2 -> 例外錯誤
-        /// message 回傳訊息
-        /// </returns>
-        public async Task<UpdatePersoninfoResultModel> UpdatePersoninfoAsync(UpdatePersoninfoQueryModel query)
+        public UpdatePersoninfoResultModel UpdatePersoninfo(UpdatePersoninfoQueryModel query)
         {
             var result = new UpdatePersoninfoResultModel();
-            var table = _ExamContext.Personinfos;
 
-            var personinfo = await table.FirstOrDefaultAsync(p => p.No == query.No);
+            var personinfo = _examContext.Personinfos.FirstOrDefault(p => p.No == query.No);
 
             if (personinfo == null)
             {
@@ -193,15 +159,15 @@ namespace ReactApp.Server.Services
                     personinfo.Note = query.Note;
                 }
 
-                await _ExamContext.SaveChangesAsync();
+                _examContext.SaveChanges();
 
-                result.Cmd = 0; // 假设 2 表示成功
+                result.Cmd = 0;
                 result.Message = "Success";
             }
             catch (Exception ex)
             {
-                result.Cmd = 3;
-                result.Message = $"Failed to update Personinfo. Error: {ex.Message}";
+                result.Cmd = 2;
+                result.Message = $"Failed to update personinfo. Error: {ex.Message}";
             }
 
             return result;
