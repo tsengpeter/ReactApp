@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
@@ -46,23 +45,12 @@ export default defineConfig({
     },
     server: {
         proxy: {
+            '^/api/Personinfo': {
+                target: 'https://localhost:7115/',
+                secure: false,
+                changeOrigin: true
+            },
             '^/weatherforecast': {
-                target: 'https://localhost:7115/',
-                secure: false
-            },
-            '^api/Personinfo/GetPersoninfo': {
-                target: 'https://localhost:7115/',
-                secure: false
-            },
-            '^api/Personinfo/AddNewPersoninfo': {
-                target: 'https://localhost:7115/',
-                secure: false
-            },
-            '^api/Personinfo/DeletePersoninfo': {
-                target: 'https://localhost:7115/',
-                secure: false
-            },
-            '^api/Personinfo/UpdatePersoninfo': {
                 target: 'https://localhost:7115/',
                 secure: false
             }
