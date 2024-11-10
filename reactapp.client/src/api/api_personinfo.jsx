@@ -27,7 +27,7 @@ export const addPersoninfo = async (data) => {
 
 export const deletePersoninfo = async (data) => {
     const response = await fetch(`${BASE_URL}/DeletePersoninfo`, {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -39,7 +39,7 @@ export const deletePersoninfo = async (data) => {
 
 export const updatePersoninfo = async (data) => {
     const response = await fetch(`${BASE_URL}/UpdatePersoninfo`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },

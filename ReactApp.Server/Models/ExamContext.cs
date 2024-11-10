@@ -24,17 +24,21 @@ public partial class ExamContext : DbContext
     {
         modelBuilder.Entity<Personinfo>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Personinfo");
+            entity.HasKey(e => e.No);
+
+            entity.ToTable("Personinfo");
+
+            entity.Property(e => e.No)
+                .ValueGeneratedOnAdd(); 
 
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.No).ValueGeneratedOnAdd();
+
             entity.Property(e => e.Note)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.Phone)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -42,6 +46,7 @@ public partial class ExamContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
+
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
